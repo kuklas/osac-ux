@@ -9478,12 +9478,17 @@
         ? alerts[0].description
         : `<ul class="pf-v6-c-list">${alerts.map(alert => `<li><strong>${alert.title}:</strong> ${alert.description}</li>`).join('')}</ul>`;
       const actions = alerts.map(alert => alert.action || '').filter(Boolean).join('');
+      const expanded = state.vmOperationAlertExpanded !== false;
       return `
-        <div class="pf-v6-c-alert pf-m-inline pf-m-danger vm-restart-required" role="alert">
+        <div class="pf-v6-c-alert pf-m-inline pf-m-danger vm-restart-required pf-m-expandable ${expanded ? 'pf-m-expanded' : ''}" role="alert">
+          <div class="pf-v6-c-alert__toggle">
+            <button class="pf-v6-c-button pf-m-plain" type="button" data-vm-operation-alert-toggle aria-label="Configuration changes need attention details" aria-expanded="${expanded}" aria-controls="vm-operation-alert-body">
+              <span class="pf-v6-c-button__icon"><span class="pf-v6-c-alert__toggle-icon"><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></span>
+            </button>
+          </div>
           <div class="pf-v6-c-alert__icon"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i></div>
           <h4 class="pf-v6-c-alert__title">${title}</h4>
-          <div class="pf-v6-c-alert__description">${description}</div>
-          ${actions ? `<div class="pf-v6-u-mt-md vm-operation-alert__actions">${actions}</div>` : ''}
+          <div class="pf-v6-c-alert__description" id="vm-operation-alert-body" ${expanded ? '' : 'hidden'}>${description}${actions ? `<div class="pf-v6-u-mt-md vm-operation-alert__actions">${actions}</div>` : ''}</div>
         </div>`;
     }
 
@@ -10845,6 +10850,7 @@
       vmColumns: null, // set from DEFAULT_VM_COLUMNS
       vmColumnsDraft: null,
       selectedVmName: null,
+      vmOperationAlertExpanded: true,
       selectedInstanceTypeName: null,
       selectedNetworkId: null,
       selectedProjectName: null,
@@ -18123,6 +18129,16 @@
         alert?.classList.toggle('pf-m-expanded', expanded);
         if (description) description.hidden = !expanded;
         if (v.restartRequired) v.restartRequired.expanded = expanded;
+      });
+      root.querySelector('[data-vm-operation-alert-toggle]')?.addEventListener('click', e => {
+        const toggle = e.currentTarget;
+        const alert = toggle.closest('.pf-v6-c-alert');
+        const description = alert?.querySelector('#vm-operation-alert-body');
+        const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(expanded));
+        alert?.classList.toggle('pf-m-expanded', expanded);
+        if (description) description.hidden = !expanded;
+        state.vmOperationAlertExpanded = expanded;
       });
       root.querySelector('#vm-detail-actions-btn')?.addEventListener('click', e => {
           e.stopPropagation();
