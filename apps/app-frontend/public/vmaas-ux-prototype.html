@@ -16013,7 +16013,7 @@
       let actions = '';
       if (!canEdit || autoAttached) {
         actions = '';
-      } else if (status === 'attaching' || status === 'detaching' || retryScheduled || status === 'failed') {
+      } else if (status === 'attaching' || status === 'detaching' || retryScheduled) {
         actions = '';
       } else if (status === 'attached') {
         actions = `<button type="button" class="pf-v6-c-button pf-m-secondary pf-m-small" data-ip-toggle="external">Detach external IP</button>`;
