@@ -16006,7 +16006,6 @@
         : '';
       const contentHtml = `
         <div class="vm-access-section__host-row"><span>${addressHtml || 'Not attached'}</span>${actions}</div>
-        ${captureAvailable ? '<p class="vm-access-section__meta">Screenshot mode is on. Attaching and detaching stay visible until you select Finish demo step.</p>' : ''}
         ${EXTERNAL_IP_CAPTURE_MODE && vm._extIpCompleteDemoStep ? '<button type="button" class="pf-v6-c-button pf-m-link pf-m-small" data-ip-demo-complete>Finish demo step (screenshot mode)</button>' : ''}
         ${status === 'failed' && !retryScheduled && !canEdit && !deleting ? '<p class="vm-access-section__meta">Ask a tenant administrator to attach an external IP.</p>' : ''}
         ${autoAttached ? '<p class="vm-access-section__meta">This IP is managed with the VM and is detached only when the VM is deleted.</p>' : ''}`;
