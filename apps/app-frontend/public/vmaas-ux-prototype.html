@@ -9450,7 +9450,7 @@
         const retry = vm.resizeFailure.nextRetryAt
           ? ` Another attempt is scheduled for ${escAttr(vm.resizeFailure.nextRetryAt)}.`
           : (vm.resizeFailure.retryPlanned === false ? ' No automatic retry is scheduled.' : '');
-        alerts.push({ title: 'Resize failed', description: `Could not apply instance type <strong>${target}</strong>. ${reason}${retry}` });
+        alerts.push({ title: 'Resize failed', description: `Could not apply instance type <strong>${target}</strong>. ${reason}${retry}`, action: '<button type="button" class="pf-v6-c-button pf-m-secondary pf-m-small" data-alert-resize-again>Resize again</button>' });
       }
       const ipStatus = vmExternalIpStatus(vm);
       if (ipStatus === 'failed' && !vmExternalIpRetryScheduled(vm)) {
@@ -9459,7 +9459,7 @@
         const retry = vm.externalIpNextRetryAt
           ? ` Another attempt is scheduled for ${escAttr(vm.externalIpNextRetryAt)}.`
           : (vm.externalIpRetryPlanned === false ? ' No automatic retry is scheduled.' : '');
-        alerts.push({ title: 'External IP attachment failed', description: `${reason}${retry}` });
+        alerts.push({ title: 'External IP attachment failed', description: `${reason}${retry}`, action: '<button type="button" class="pf-v6-c-button pf-m-secondary pf-m-small" data-alert-retry-attachment>Retry attachment</button>' });
       }
       if (alerts.length === 0) return '';
       const title = alerts.length === 1
@@ -9468,11 +9468,13 @@
       const description = alerts.length === 1
         ? alerts[0].description
         : `<ul class="pf-v6-c-list">${alerts.map(alert => `<li><strong>${alert.title}:</strong> ${alert.description}</li>`).join('')}</ul>`;
+      const actions = alerts.map(alert => alert.action || '').filter(Boolean).join('');
       return `
         <div class="pf-v6-c-alert pf-m-inline pf-m-danger vm-restart-required" role="alert">
           <div class="pf-v6-c-alert__icon"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i></div>
           <h4 class="pf-v6-c-alert__title">${title}</h4>
           <div class="pf-v6-c-alert__description">${description}</div>
+          ${actions ? `<div class="pf-v6-u-mt-md vm-operation-alert__actions">${actions}</div>` : ''}
         </div>`;
     }
 
@@ -18127,6 +18129,12 @@
         openEditComputeModal();
       });
       root.querySelector('[data-resize-again]')?.addEventListener('click', openEditComputeModal);
+      root.querySelector('[data-alert-resize-again]')?.addEventListener('click', openEditComputeModal);
+      root.querySelector('[data-alert-retry-attachment]')?.addEventListener('click', () => {
+        const target = v.externalIpAttempted || v.externalIpPending;
+        if (!target) return;
+        beginAttachExternalIp(v, target, false);
+      });
       root.querySelectorAll('[data-overview-row-menu]').forEach(b => {
         b.addEventListener('click', e => {
           e.stopPropagation();
