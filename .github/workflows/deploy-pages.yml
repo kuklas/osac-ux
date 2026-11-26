@@ -1,3 +1,4 @@
+# fork-pages-enable: ensure Actions picks up this workflow on kuklas/osac-ux
 name: Deploy Demo to GitHub Pages
 
 on:
